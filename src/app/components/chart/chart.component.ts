@@ -4,6 +4,7 @@ import {StatReduced} from '../../models/stat';
 import {Label} from 'ng2-charts';
 import {ChartDataSets, ChartOptions} from 'chart.js';
 import {MatSelectChange} from '@angular/material/select';
+import {MatButtonToggleChange} from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-chart',
@@ -17,6 +18,7 @@ export class ChartComponent implements OnInit {
   initFinished = false;
   allKeys: string[] = [];
   selectedKeys: string[] = [];
+  currentMode = 'count';
 
   public chartOptions: ChartOptions = {
     responsive: true,
@@ -64,8 +66,7 @@ export class ChartComponent implements OnInit {
         this.stats = data;
         this.allKeys = Object.keys(this.stats).sort();
         this.selectedKeys = this.allKeys;
-        // this.initChart('count');
-        this.initChart('uniques');
+        this.initChart();
       },
       error => {
         console.error(error);
@@ -73,7 +74,7 @@ export class ChartComponent implements OnInit {
     );
   }
 
-  initChart(property: string | 'count' | 'uniques') {
+  initChart() {
     let min = new Date().getTime();
     let max = 0;
 
@@ -84,7 +85,7 @@ export class ChartComponent implements OnInit {
       };
 
       for (const statReduced of this.stats[key]) {
-        temp.data.push({x: new Date(statReduced.date).toDateString(), y: statReduced[property]});
+        temp.data.push({x: new Date(statReduced.date).toDateString(), y: statReduced[this.currentMode]});
         if (statReduced.date < min) {
           min = statReduced.date;
         } else if (statReduced.date > max) {
@@ -106,7 +107,14 @@ export class ChartComponent implements OnInit {
     this.chartData = [];
     this.chartLabels = [];
     this.selectedKeys = event.value;
-    // this.initChart('count');
-    this.initChart('uniques');
+    this.initChart();
+  }
+
+  modeChange(event: MatButtonToggleChange) {
+    this.initFinished = false;
+    this.chartData = [];
+    this.chartLabels = [];
+    this.initChart();
+    console.log(this.currentMode);
   }
 }

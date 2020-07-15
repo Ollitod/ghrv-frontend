@@ -10,23 +10,29 @@ import {MatSelectModule} from '@angular/material/select';
 import {ChartComponent} from './components/chart/chart.component';
 import {ChartsModule} from 'ng2-charts';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     ChartComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        HttpClientModule,
-        MatDatepickerModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        ChartsModule,
-        MatProgressSpinnerModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    ChartsModule,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule,
+    MatButtonToggleModule,
+    FormsModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

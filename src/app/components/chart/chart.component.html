@@ -7,6 +7,11 @@
     </mat-select>
   </mat-form-field>
 
+  <mat-button-toggle-group name="view" [(ngModel)]="currentMode" (change)="modeChange($event)">
+    <mat-button-toggle value="count">Total views</mat-button-toggle>
+    <mat-button-toggle value="uniques">Unique views</mat-button-toggle>
+  </mat-button-toggle-group>
+
   <div style="display: block;">
     <mat-progress-spinner
       class="spinner"
