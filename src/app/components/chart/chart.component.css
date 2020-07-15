@@ -1,7 +1,19 @@
+#container, .spinner {
+  position: absolute;
+}
+
 #container {
   top: 5%;
   left: 5%;
-  position: absolute;
   width: 90%;
   height: 90%;
+}
+
+.spinner {
+  left: 45%;
+  top: 40%;
+}
+
+::ng-deep .mat-select-panel {
+  max-height: 80vh !important;
 }

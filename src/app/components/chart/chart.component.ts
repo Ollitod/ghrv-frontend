@@ -3,6 +3,7 @@ import {HttpService} from '../../services/http.service';
 import {StatReduced} from '../../models/stat';
 import {Label} from 'ng2-charts';
 import {ChartDataSets, ChartOptions} from 'chart.js';
+import {MatSelectChange} from '@angular/material/select';
 
 @Component({
   selector: 'app-chart',
@@ -11,10 +12,11 @@ import {ChartDataSets, ChartOptions} from 'chart.js';
 })
 export class ChartComponent implements OnInit {
   stats: Map<string, StatReduced[]>;
-
   chartLabels: Label[] = [];
   chartData: ChartDataSets[] = [];
-  shouldDisplay = false;
+  initFinished = false;
+  allKeys: string[] = [];
+  selectedKeys: string[] = [];
 
   public chartOptions: ChartOptions = {
     responsive: true,
@@ -38,6 +40,18 @@ export class ChartComponent implements OnInit {
           labelString: 'Total views'
         }
       }]
+    },
+    tooltips: {
+      enabled: true,
+      mode: 'single',
+      callbacks: {
+        label: (tooltipItems, data) => {
+
+
+          console.log(data);
+          return tooltipItems.yLabel + ' : ' + tooltipItems.xLabel + ' Files';
+        }
+      }
     }
   };
 
@@ -48,40 +62,51 @@ export class ChartComponent implements OnInit {
     this.httpService.findAllGrouped().subscribe(
       data => {
         this.stats = data;
-
-        let min = new Date().getTime();
-        let max = 0;
-
-        for (const key of Object.keys(this.stats)) {
-
-          const temp = {
-            label: key, data: []
-          };
-
-          for (const statReduced of this.stats[key]) {
-            temp.data.push({x: new Date(statReduced.date).toLocaleDateString(), y: statReduced.count});
-
-            if (statReduced.date < min) {
-              min = statReduced.date;
-            } else if (statReduced.date > max) {
-              max = statReduced.date;
-            }
-          }
-
-          this.chartData.push(temp);
-        }
-
-        for (let i = min; i <= max; i += 86400000) {
-          this.chartLabels.push(new Date(i).toString());
-        }
-
-        this.shouldDisplay = true;
+        this.allKeys = Object.keys(this.stats).sort();
+        this.selectedKeys = this.allKeys;
+        // this.initChart('count');
+        this.initChart('uniques');
       },
       error => {
         console.error(error);
       }
     );
-
   }
 
+  initChart(property: string | 'count' | 'uniques') {
+    let min = new Date().getTime();
+    let max = 0;
+
+    for (const key of this.selectedKeys) {
+
+      const temp = {
+        label: key, data: [], lineTension: 0.2, fill: false
+      };
+
+      for (const statReduced of this.stats[key]) {
+        temp.data.push({x: new Date(statReduced.date).toDateString(), y: statReduced[property]});
+        if (statReduced.date < min) {
+          min = statReduced.date;
+        } else if (statReduced.date > max) {
+          max = statReduced.date;
+        }
+      }
+      this.chartData.push(temp);
+    }
+
+    for (let i = min; i <= max; i += 86400000) {
+      this.chartLabels.push(new Date(i).toString());
+    }
+
+    this.initFinished = true;
+  }
+
+  handleChange(event: MatSelectChange) {
+    this.initFinished = false;
+    this.chartData = [];
+    this.chartLabels = [];
+    this.selectedKeys = event.value;
+    // this.initChart('count');
+    this.initChart('uniques');
+  }
 }
