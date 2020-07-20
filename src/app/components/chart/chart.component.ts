@@ -11,6 +11,7 @@ import {MatButtonToggleChange} from '@angular/material/button-toggle';
   templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.css']
 })
+
 export class ChartComponent implements OnInit {
   stats: Map<string, StatReduced[]>;
   chartLabels: Label[] = [];
@@ -43,18 +44,6 @@ export class ChartComponent implements OnInit {
         }
       }]
     },
-    tooltips: {
-      enabled: true,
-      mode: 'single',
-      callbacks: {
-        label: (tooltipItems, data) => {
-
-
-          console.log(data);
-          return tooltipItems.yLabel + ' : ' + tooltipItems.xLabel + ' Files';
-        }
-      }
-    }
   };
 
   constructor(private httpService: HttpService) {
@@ -103,18 +92,68 @@ export class ChartComponent implements OnInit {
   }
 
   handleChange(event: MatSelectChange) {
-    this.initFinished = false;
-    this.chartData = [];
-    this.chartLabels = [];
+    this.clearVariables();
     this.selectedKeys = event.value;
     this.initChart();
   }
 
   modeChange(event: MatButtonToggleChange) {
+    this.clearVariables();
+
+    // To update the label on the y-Axis, it is necessary to reset all the options of scales
+    this.chartOptions = {
+      scales: {
+        xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Date'
+          },
+          type: 'time',
+          time: {
+            unit: 'day',
+            displayFormats: {
+              day: 'YYYY-MM-DD'
+            }
+          }
+        }],
+        yAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: (this.currentMode === 'count' ? 'Total' : 'Unique') + ' views'
+          }
+        }]
+      }
+    };
+    this.initChart();
+  }
+
+  // onButtonClicked(event: MouseEvent) {
+  //   const btnId: string = (event.target as Element).id;
+  //   if (btnId === 'btnSelect') {
+  //     this.selectedKeys = this.allKeys;
+  //   } else if (btnId === 'btnUnselect') {
+  //     this.selectedKeys = [];
+  //   }
+  //   this.clearVariables();
+  //   this.initChart();
+  // }
+
+  selectClicked(event: MouseEvent) {
+    this.selectedKeys = this.allKeys;
+    this.clearVariables();
+    console.log(event);
+    this.initChart();
+  }
+
+  unselectClicked(event: MouseEvent) {
+    this.selectedKeys = [];
+    this.clearVariables();
+    this.initChart();
+  }
+
+  clearVariables() {
     this.initFinished = false;
     this.chartData = [];
     this.chartLabels = [];
-    this.initChart();
-    console.log(this.currentMode);
   }
 }

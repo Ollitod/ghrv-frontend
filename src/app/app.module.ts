@@ -13,26 +13,28 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
   declarations: [
     AppComponent,
     ChartComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    ChartsModule,
-    MatProgressSpinnerModule,
-    MatSlideToggleModule,
-    MatButtonToggleModule,
-    FormsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        MatDatepickerModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        ChartsModule,
+        MatProgressSpinnerModule,
+        MatSlideToggleModule,
+        MatButtonToggleModule,
+        FormsModule,
+        MatButtonModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

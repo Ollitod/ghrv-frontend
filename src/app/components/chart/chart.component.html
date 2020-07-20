@@ -12,12 +12,14 @@
     <mat-button-toggle value="uniques">Unique views</mat-button-toggle>
   </mat-button-toggle-group>
 
+  <button mat-raised-button color="primary" id="btnSelect" (click)="selectClicked($event)">Select all</button>
+  <button mat-raised-button color="primary" id="btnUnselect" (click)="unselectClicked($event)">Unselect all</button>
+
   <div style="display: block;">
     <mat-progress-spinner
       class="spinner"
       [mode]="'indeterminate'"
-      *ngIf="!initFinished"
-    >
+      *ngIf="!initFinished">
     </mat-progress-spinner>
     <canvas *ngIf="initFinished" baseChart
             [datasets]="chartData"
