@@ -14,27 +14,39 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule} from '@angular/material/button';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatRadioModule} from '@angular/material/radio';
 
 @NgModule({
   declarations: [
     AppComponent,
     ChartComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        HttpClientModule,
-        MatDatepickerModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        ChartsModule,
-        MatProgressSpinnerModule,
-        MatSlideToggleModule,
-        MatButtonToggleModule,
-        FormsModule,
-        MatButtonModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    ChartsModule,
+    MatProgressSpinnerModule,
+    MatSlideToggleModule,
+    MatButtonToggleModule,
+    FormsModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatInputModule,
+    MatDividerModule,
+    MatSnackBarModule,
+    MatRadioModule
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

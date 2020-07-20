@@ -4,7 +4,7 @@ import {StatReduced} from '../../models/stat';
 import {Label} from 'ng2-charts';
 import {ChartDataSets, ChartOptions} from 'chart.js';
 import {MatSelectChange} from '@angular/material/select';
-import {MatButtonToggleChange} from '@angular/material/button-toggle';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-chart',
@@ -14,48 +14,38 @@ import {MatButtonToggleChange} from '@angular/material/button-toggle';
 
 export class ChartComponent implements OnInit {
   stats: Map<string, StatReduced[]>;
+  topStats: Map<string, number> = new Map<string, number>();
   chartLabels: Label[] = [];
   chartData: ChartDataSets[] = [];
   initFinished = false;
-  allKeys: string[] = [];
-  selectedKeys: string[] = [];
+  allRepos: string[] = [];
+  selectedRepos: string[] = [];
   currentMode = 'count';
+  bestReposN = 5;
 
-  public chartOptions: ChartOptions = {
-    responsive: true,
-    scales: {
-      xAxes: [{
-        scaleLabel: {
-          display: true,
-          labelString: 'Date'
-        },
-        type: 'time',
-        time: {
-          unit: 'day',
-          displayFormats: {
-            day: 'YYYY-MM-DD'
-          }
-        }
-      }],
-      yAxes: [{
-        scaleLabel: {
-          display: true,
-          labelString: 'Total views'
-        }
-      }]
-    },
-  };
+  public chartOptions: ChartOptions;
 
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpService, private snackBarController: MatSnackBar) {
   }
 
   ngOnInit(): void {
+
     this.httpService.findAllGrouped().subscribe(
       data => {
         this.stats = data;
-        this.allKeys = Object.keys(this.stats).sort();
-        this.selectedKeys = this.allKeys;
-        this.initChart();
+        this.allRepos = Object.keys(this.stats).sort();
+
+        for (const key of this.allRepos) {
+          let cnt = 0;
+          for (const statReduced of this.stats[key]) {
+            cnt += statReduced.count;
+          }
+          this.topStats.set(key, cnt);
+        }
+
+        this.initChartOptions();
+        this.filterBestN();
+
       },
       error => {
         console.error(error);
@@ -63,12 +53,11 @@ export class ChartComponent implements OnInit {
     );
   }
 
-  initChart() {
+  initChart(): void {
     let min = new Date().getTime();
     let max = 0;
 
-    for (const key of this.selectedKeys) {
-
+    for (const key of this.selectedRepos) {
       const temp = {
         label: key, data: [], lineTension: 0.2, fill: false
       };
@@ -91,17 +80,39 @@ export class ChartComponent implements OnInit {
     this.initFinished = true;
   }
 
-  handleChange(event: MatSelectChange) {
+  onSelectChanged(event: MatSelectChange): void {
     this.clearVariables();
-    this.selectedKeys = event.value;
+    this.selectedRepos = event.value;
     this.initChart();
   }
 
-  modeChange(event: MatButtonToggleChange) {
+  onCurrentModeChange(): void {
     this.clearVariables();
+    this.initChartOptions();
+    this.initChart();
+  }
 
-    // To update the label on the y-Axis, it is necessary to reset all the options of scales
+  onSelectAllClicked(): void {
+    this.selectedRepos = this.allRepos;
+    this.clearVariables();
+    this.initChart();
+  }
+
+  onDeselectAllClicked(): void {
+    this.selectedRepos = [];
+    this.clearVariables();
+    this.initChart();
+  }
+
+  clearVariables(): void {
+    this.initFinished = false;
+    this.chartData = [];
+    this.chartLabels = [];
+  }
+
+  private initChartOptions(): void {
     this.chartOptions = {
+      responsive: true,
       scales: {
         xAxes: [{
           scaleLabel: {
@@ -122,38 +133,23 @@ export class ChartComponent implements OnInit {
             labelString: (this.currentMode === 'count' ? 'Total' : 'Unique') + ' views'
           }
         }]
-      }
+      },
     };
-    this.initChart();
   }
 
-  // onButtonClicked(event: MouseEvent) {
-  //   const btnId: string = (event.target as Element).id;
-  //   if (btnId === 'btnSelect') {
-  //     this.selectedKeys = this.allKeys;
-  //   } else if (btnId === 'btnUnselect') {
-  //     this.selectedKeys = [];
-  //   }
-  //   this.clearVariables();
-  //   this.initChart();
-  // }
+  filterBestN(): void {
+    console.log(this.bestReposN);
 
-  selectClicked(event: MouseEvent) {
-    this.selectedKeys = this.allKeys;
     this.clearVariables();
-    console.log(event);
+    this.topStats = new Map([...this.topStats.entries()].sort((pair1, pair2) => pair2[1] - pair1[1]));
+    this.selectedRepos = Array.from({length: +this.bestReposN}, function() {
+      return this.next().value;
+    }, this.topStats.keys());
+
     this.initChart();
   }
 
-  unselectClicked(event: MouseEvent) {
-    this.selectedKeys = [];
-    this.clearVariables();
-    this.initChart();
-  }
-
-  clearVariables() {
-    this.initFinished = false;
-    this.chartData = [];
-    this.chartLabels = [];
+  isValidBestReposN(): boolean {
+    return !(!this.bestReposN || this.bestReposN < 1 || this.bestReposN > this.allRepos.length);
   }
 }

@@ -1,12 +1,12 @@
-#container, .spinner {
+.container, .spinner {
   position: absolute;
 }
 
-#container {
-  top: 5%;
+.container {
+  top: 2%;
   left: 5%;
   width: 90%;
-  height: 90%;
+  height: 98%;
 }
 
 .spinner {
@@ -15,7 +15,41 @@
 }
 
 ::ng-deep .mat-select-panel {
-  max-height: 80vh !important;
+  max-height: 70vh !important;
 }
 
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
+.flex-item > * {
+  margin-left: 10px;
+}
+
+.logo {
+  height: 50px;
+  object-fit: contain;
+}
+
+input {
+  width: 500px;
+}
+
+mat-divider {
+  margin-top: 15px;
+}
+
+.mat-button-toggle-label-content{
+  line-height: 0px !important;
+  padding: 12px 10px 10px 10px !important
+}
+
+mat-form-field {
+  width: 500px;
+}
+
+.text-danger {
+  color: red;
+}

@@ -1,32 +1,58 @@
-<div id="container">
+<mat-progress-spinner
+  class="spinner"
+  mode="indeterminate"
+  *ngIf="!initFinished; else content">
+</mat-progress-spinner>
 
-  <mat-form-field appearance="fill">
-    <mat-label>Select GitHub repositories</mat-label>
-    <mat-select (selectionChange)="handleChange($event)" [multiple]="true">
-      <mat-option *ngFor="let key of allKeys" [value]="key">{{key}}</mat-option>
-    </mat-select>
-  </mat-form-field>
+<ng-template #content>
+  <div class="container">
+    <div class="flex">
+      <img class="logo" src="assets/logo.png">
 
-  <mat-button-toggle-group name="view" [(ngModel)]="currentMode" (change)="modeChange($event)">
-    <mat-button-toggle value="count">Total views</mat-button-toggle>
-    <mat-button-toggle value="uniques">Unique views</mat-button-toggle>
-  </mat-button-toggle-group>
+      <div class="flex-item">
+        <mat-form-field appearance="standard">
+          <mat-label>Select GitHub repositories</mat-label>
+          <mat-select (selectionChange)="onSelectChanged($event)" [(ngModel)]="selectedRepos" [multiple]="true">
+            <mat-option *ngFor="let key of allRepos" [value]="key">{{key}}</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-  <button mat-raised-button color="primary" id="btnSelect" (click)="selectClicked($event)">Select all</button>
-  <button mat-raised-button color="primary" id="btnUnselect" (click)="unselectClicked($event)">Unselect all</button>
+        <button mat-raised-button color="primary" (click)="onSelectAllClicked()">Select all
+        </button>
 
-  <div style="display: block;">
-    <mat-progress-spinner
-      class="spinner"
-      [mode]="'indeterminate'"
-      *ngIf="!initFinished">
-    </mat-progress-spinner>
-    <canvas *ngIf="initFinished" baseChart
-            [datasets]="chartData"
-            [labels]="chartLabels"
-            [chartType]="'line'"
-            [options]="chartOptions"
-    ></canvas>
+        <button mat-raised-button color="primary" (click)="onDeselectAllClicked()">Deselect
+          all
+        </button>
+      </div>
+
+      <div class="flex-item">
+        <mat-form-field appearance="standard">
+          <mat-label>Top n repos</mat-label>
+          <input [(ngModel)]="bestReposN" min="1" [max]="allRepos.length" type="number" matInput>
+          <mat-hint class="text-danger" *ngIf="!isValidBestReposN()">Enter a
+            number
+            between 1 and {{allRepos.length}}</mat-hint>
+        </mat-form-field>
+        <button mat-raised-button [disabled]="!isValidBestReposN()" color="primary" (click)="filterBestN()">Filter</button>
+      </div>
+
+      <div class="flex-item">
+        <mat-button-toggle-group name="view" [(ngModel)]="currentMode" (change)="onCurrentModeChange()">
+          <mat-button-toggle value="count">Total views</mat-button-toggle>
+          <mat-button-toggle value="uniques">Unique views</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div style="display: block;">
+      <canvas *ngIf="initFinished" baseChart
+              [datasets]="chartData"
+              [labels]="chartLabels"
+              [chartType]="'line'"
+              [options]="chartOptions"
+      ></canvas>
+    </div>
   </div>
-
-</div>
+</ng-template>
